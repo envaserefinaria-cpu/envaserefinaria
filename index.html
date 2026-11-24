@@ -567,6 +567,8 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
    </div>
    <label for="register-email">E-mail Coamo</label>
    <input id="register-email" type="email" autocomplete="username" placeholder="usuario@coamo.com.br" required>
+   <label for="register-phone">Celular com DDD</label>
+   <input id="register-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(00) 90000-0000" required>
    <label for="register-password">Senha</label>
    <input id="register-password" type="password" minlength="8" autocomplete="new-password" required>
    <label for="register-confirm">Confirme a senha</label>
@@ -780,6 +782,11 @@ function updateRegistrationSector(){
 }
 role.onchange=updateRegistrationSector;
 const coamoEmail=(input)=>input.value.trim().toLowerCase();
+function normalizeRegistrationPhone(value){
+ const digits=value.replace(/[\s()+.-]/g,'');
+ const national=digits.length===13&&digits.startsWith('55')?digits.slice(2):digits;
+ return /^[1-9]{2}9\d{8}$/.test(national)?'+55'+national:null;
+}
 const allowedEmail=value=>/^[^\s@]+@coamo\.com\.br$/i.test(value);
 const allowedLoginEmail=value=>allowedEmail(value)||/^[^\s@]+@gmail\.com$/i.test(value);
 let buttonX=0,buttonY=0,vx=0,vy=0,accessFrame=0;
@@ -917,10 +924,12 @@ void openRecoveryLink();
 register.addEventListener('submit',async e=>{
  e.preventDefault();
  const user=coamoEmail($('#register-email')),secret=$('#register-password').value;
+ const phone=normalizeRegistrationPhone($('#register-phone').value);
  const profile={name:nameInput.value.trim(),role:role.value,sector:role.value==='operator'?sector.value:null};
  const button=register.querySelector('[type=submit]');
  if(!allowedEmail(user)){feedback.textContent='Use um e-mail terminado em @coamo.com.br.';return}
  if(!profile.name){feedback.textContent='Informe o nome.';return}
+ if(!phone){feedback.textContent='Informe um celular brasileiro com DDD, com ou sem +55.';$('#register-phone').focus();return}
  if(profile.role==='operator'&&!accessSectors.has(profile.sector)){feedback.textContent='Selecione o setor do operador.';return}
  if(secret.length<8){feedback.textContent='Use pelo menos oito caracteres na senha.';return}
  if(secret!==$('#register-confirm').value){feedback.textContent='As senhas precisam ser iguais.';return}
@@ -928,7 +937,7 @@ register.addEventListener('submit',async e=>{
  try{
   if(!supabaseClient)throw new Error('Cliente indisponível');
   const {data,error}=await supabaseClient.auth.signUp({
-   email:user,password:secret,options:{data:{name:profile.name,requested_role:profile.role,requested_sector:profile.sector}}
+   email:user,password:secret,options:{data:{name:profile.name,requested_role:profile.role,requested_sector:profile.sector,requested_phone:phone}}
   });
   if(error){
    feedback.textContent=error.status===429?'Limite de envio atingido. Tente mais tarde.':'Não foi possível enviar o cadastro. Se já possui uma conta, volte ao login.';
