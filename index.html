@@ -1537,6 +1537,28 @@ const sum=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);
 const grp=F=>{const g={};F.forEach(f=>{const o=g[f.nome]=g[f.nome]||{nome:f.nome,n:0,min:0,l:[]};o.n++;o.min+=f.proc;o.l.push(f)});return Object.values(g)};
 const kpi=(l,v,s,c,tip)=>`<div class="kpi ${c&&c.trim()||''}" title="${esc(tip||'')}"><div class="kpihead">${l}</div><strong>${v}</strong><small>${s||''}</small></div>`;
 let animatedView=null;
+function revealChart(canvas){
+ if(!canvas.isConnected||prefersReducedMotion.matches||matchMedia('print').matches)return;
+ const motion=canvas.animate(
+  [{opacity:.16,translate:'0 12px',scale:'1 .94'},{opacity:1,translate:'0 0',scale:'1 1'}],
+  {duration:720,easing:'cubic-bezier(.2,0,0,1)'}
+ );
+ panelMotion.add(motion);
+ motion.onfinish=motion.oncancel=()=>panelMotion.delete(motion);
+}
+const chartObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{
+ for(const entry of entries){
+  if(entry.intersectionRatio>=0.12){
+   chartObserver.unobserve(entry.target);
+   revealChart(entry.target);
+  }
+ }
+},{threshold:0.12}):null;
+function clearCharts(){
+ chartObserver?.disconnect();
+ CH.forEach(chart=>chart.destroy());
+ CH=[];
+}
 const ch=(id,type,data,opt)=>{
  const canvas=document.getElementById(id);
  if(!canvas||!window.Chart)return;
@@ -1549,6 +1571,9 @@ const ch=(id,type,data,opt)=>{
  };
  if(prefersReducedMotion.matches||matchMedia('print').matches)options.animation=false;
  CH.push(new Chart(canvas,{type,data,options}));
+ if(!prefersReducedMotion.matches&&!matchMedia('print').matches){
+  if(chartObserver)chartObserver.observe(canvas);else revealChart(canvas);
+ }
 };
 const cv=(id,h)=>`<div class="cv"${h?` style="height:${h}px"`:''}><canvas id="${id}"></canvas></div>`;
 const wrap=(s,n=22)=>{const out=[];let l='';String(s).split(' ').forEach(x=>{if(l&&(l+' '+x).length>n){out.push(l);l=x}else l=(l?l+' ':'')+x});if(l)out.push(l);return out.length?out:['']};
@@ -2460,7 +2485,7 @@ function render(){if(!canOpenSector(AREA))return;if(M==='cfg'&&!isManagement())M
  const viewChanged=animatedView!==view;
  if(viewChanged)stopPanelMotion();
  animatedView=view;
- CH.forEach(c=>c.destroy());CH=[];S=calc();const TT={visao:'Visão geral da operação',prod:'Produção e turnos',t1:'Desempenho do Turno A',t2:'Desempenho do Turno B',t3:'Desempenho do Turno C',ins:'Consumo e perdas',fal:'Paradas e falhas',ord:'Ordem de produção',rel:'Relatório',proj:'Projeção de fechamento do mês',qual:'Qualidade dos dados',custos:'Análise de custos',imp:'Dados e importação',cfg:'Configurações'};
+ clearCharts();S=calc();const TT={visao:'Visão geral da operação',prod:'Produção e turnos',t1:'Desempenho do Turno A',t2:'Desempenho do Turno B',t3:'Desempenho do Turno C',ins:'Consumo e perdas',fal:'Paradas e falhas',ord:'Ordem de produção',rel:'Relatório',proj:'Projeção de fechamento do mês',qual:'Qualidade dos dados',custos:'Análise de custos',imp:'Dados e importação',cfg:'Configurações'};
 $('#nav').innerHTML=MENU.map(([group,items])=>`<div class="nav-group"><div class="navlabel">${group}</div>
 ${items.filter(([key])=>key!=='cfg'||isManagement()).map(([key,label])=>`<button type="button" data-m="${key}" ${key===M?'class="on" aria-current="page"':''}><span class="ico" aria-hidden="true">${menuIcons[key]}</span>${label}</button>`).join('')}</div>`).join('');
 $('#nav-toggle').firstElementChild.textContent='Módulos · '+(MENU.flatMap(([,items])=>items).find(([key])=>key===M)?.[1]||'Visão geral');
@@ -2543,7 +2568,7 @@ function showHome(){
  syncedState=null;
  $('#sync-status').textContent='';
  document.querySelectorAll('[data-area]').forEach(button=>{button.hidden=!canOpenSector(button.dataset.area)});
- CH.forEach(c=>c.destroy());CH=[];$('#v').replaceChildren();
+ clearCharts();$('#v').replaceChildren();
  $('.side').hidden=true;$('#dashboard').hidden=true;$('#home').hidden=false;
  document.body.classList.remove('rpt');document.body.classList.add('home');document.getElementById('pgs')?.remove();
  document.title='Painel industrial • Coamo';
