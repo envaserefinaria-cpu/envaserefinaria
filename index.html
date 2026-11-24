@@ -2255,10 +2255,73 @@ function vSettings(){
    return item.consumed==null?input:'<div>'+input+'<div class="mut">Consumo registrado: '+costQuantity.format(displayAmount(item.consumed,item.unit))+' '+esc(displayUnit(item.unit))+(item.rate==null?'':' · Custo do consumo: '+brl(item.consumptionCost))+'</div></div>';
   }).join('')}</div>
   <button class="b noprint" type="submit">Salvar parâmetros</button>
- </form></div>`;
+ </form></div>
+ <details class="card noprint" id="price-recovery">
+  <summary>Recuperar preços de uma cópia antiga</summary>
+  <p class="mut">Busque uma cópia neste navegador ou cole uma cópia do mesmo setor. A recuperação completa os preços em branco no Supabase.</p>
+  <form id="price-recovery-form">
+   <label for="price-recovery-copy">Cópia do setor</label>
+   <textarea id="price-recovery-copy" rows="4" style="width:100%"></textarea>
+   <div class="bar"><button type="button" class="g" id="price-recovery-local">Buscar neste navegador</button><button type="submit" class="b">Recuperar preços</button></div>
+  </form>
+  <p id="price-recovery-status" role="status"></p>
+ </details>`;
 }
+function recoverablePrices(state,sector){
+ if(!state?.DB||state.area!==sector)throw new Error('Use uma cópia de '+AREAS[sector].name+'.');
+ const months={};
+ for(const [month,settings] of Object.entries(state.DB.costs||{})){
+  if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))continue;
+  const prices=Object.entries(settings?.lossRates||{}).filter(([key,value])=>{
+   if(!Number.isFinite(value)||value<0)return false;
+   try{
+    const pair=JSON.parse(key);
+    return Array.isArray(pair)&&pair.length===2&&pair.every(part=>typeof part==='string')&&pair[0].trim()&&
+     !(sector==='refinaria'&&/^OLEO(?:$| DE SOJA\b)/.test(refText(pair[0])));
+   }catch{return false}
+  });
+  if(prices.length)months[month]=Object.fromEntries(prices);
+ }
+ return months;
+}
+function bindPriceRecovery(){
+ const section=$('#price-recovery'),textarea=$('#price-recovery-copy'),status=$('#price-recovery-status');
+ $('#price-recovery-local').onclick=()=>{
+  const local=readLocal(AREA+'_v1');
+  if(!local?.DB){status.textContent='Este endereço não tem uma cópia local para o setor.';return}
+  const costs=Object.fromEntries(Object.entries(recoverablePrices({...local,area:AREA},AREA)).map(([month,lossRates])=>[month,{lossRates}]));
+  textarea.value=JSON.stringify({area:AREA,DB:{costs}});
+  status.textContent=Object.keys(costs).length?'Preços localizados. Clique em Recuperar preços para gravá-los.':'A cópia local não contém preços deste setor.';
+ };
+ $('#price-recovery-form').onsubmit=async event=>{
+  event.preventDefault();
+  if(syncBusy||!isManagement())return;
+  const area=AREA;
+  let prices;
+  try{prices=recoverablePrices(JSON.parse(textarea.value),area)}
+  catch(error){status.textContent=error instanceof SyntaxError?'Cole uma cópia válida do painel.':error.message;return}
+  if(!Object.keys(prices).length){status.textContent='Nenhum preço válido foi encontrado na cópia.';return}
+  syncBusy=true;$('#dashboard').inert=true;
+  status.textContent='Gravando os preços no Supabase…';
+  let saved=false;
+  try{
+   const {data,error}=await supabaseClient.rpc('panel_recover_prices',{target_sector:area,monthly_prices:prices});
+   if(error)throw error;
+   saved=true;
+   const state=await readPanelData(area);
+   if(AREA!==area||!isManagement())return;
+   loadAreaData(state);syncedState=syncSnapshot();render();
+   $('#price-recovery').open=true;
+   $('#price-recovery-status').textContent=data===1?'1 preço recuperado.':data+' preços recuperados. Os valores já gravados foram preservados.';
+  }catch{
+   if(section.isConnected)status.textContent=saved?'A gravação foi concluída. Reabra o setor para conferir os valores.':'Não foi possível recuperar os preços. Sua cópia continua no campo.';
+  }finally{syncBusy=false;$('#dashboard').inert=false}
+ };
+}
+
 function aSettings(){
  bindAccountControl();
+ bindPriceRecovery();
  if(AREA==='envase')aCfg();else aRefOperation();
  bindCostMonth();
  const state=costState(),items=costSettingsItems();
