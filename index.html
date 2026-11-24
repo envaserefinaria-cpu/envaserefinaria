@@ -391,8 +391,8 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
 .access-backdrop-logo svg{display:block;width:100%;height:auto}
 .coamo-glass #coamo-access .access-card{
  width:min(100%,440px);margin-inline-start:clamp(0px,36vw,570px);
- background:linear-gradient(145deg,#ffffff57,#f6fff225);
- border-color:#ffffffba;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+ background:linear-gradient(145deg,#ffffff3f,#f6fff214);
+ border-color:#ffffffba;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
  box-shadow:0 22px 64px #253b2d33,inset 0 1px 0 #ffffffd9;
 }
 .coamo-glass #coamo-access .access-primary{box-shadow:0 8px 18px #15472d36}
@@ -404,7 +404,7 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
  }
  .coamo-glass #coamo-access .access-card{
   width:min(100%,390px);margin:0;padding:18px 18px 13px;border-radius:22px;
-  background:linear-gradient(145deg,#ffffff5c,#f1f9ef31);
+  background:linear-gradient(145deg,#ffffff47,#f1f9ef20);
  }
  .coamo-glass #coamo-access .access-card::before{left:22px;right:22px}
  .coamo-glass #coamo-access .access-backdrop-logo{
@@ -426,7 +426,37 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
   right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));
  }
 }
+
+@media(prefers-reduced-motion:no-preference){
+ .coamo-glass #coamo-access.opening-finished .access-backdrop-logo{
+  --logo-shift-x:26vw;--logo-shift-y:0px;--logo-start-scale:1.13;--logo-settled-opacity:.72;
+  animation:coamo-logo-recede 900ms cubic-bezier(.22,.68,.18,1) both;
+ }
+ .coamo-glass #coamo-access.opening-finished .access-card{
+  --card-shift-x:48px;--card-shift-y:10px;
+  animation:coamo-login-arrive 680ms cubic-bezier(.2,.75,.24,1) 290ms both;
+ }
+ @media(max-width:780px){
+  .coamo-glass #coamo-access.opening-finished .access-backdrop-logo{
+   --logo-shift-x:0px;--logo-shift-y:calc(50svh - var(--mobile-top) - 42px);
+   --logo-start-scale:1.34;--logo-settled-opacity:.88;
+  }
+  .coamo-glass #coamo-access.opening-finished .access-card{
+   --card-shift-x:0px;--card-shift-y:36px;
+  }
+ }
+ @keyframes coamo-logo-recede{
+  0%{translate:var(--logo-shift-x) var(--logo-shift-y);scale:var(--logo-start-scale);opacity:0}
+  21%{opacity:1}
+  100%{translate:0 0;scale:1;opacity:var(--logo-settled-opacity)}
+ }
+ @keyframes coamo-login-arrive{
+  from{translate:var(--card-shift-x) var(--card-shift-y);opacity:0}
+  to{translate:0 0;opacity:1}
+ }
+}
 @media(prefers-reduced-motion:reduce){.coamo-glass #coamo-access .access-backdrop-logo{transition:none}}
+
 
 </style></head><body class="home coamo-glass">
 <section id="brand-intro" class="coamo-test-theme" role="dialog" aria-modal="true" aria-label="Abertura Coamo" data-opening="video">
