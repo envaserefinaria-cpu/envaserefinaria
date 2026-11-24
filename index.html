@@ -579,7 +579,8 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
   <form id="access-recovery" hidden>
    <label for="recover-email">E-mail da conta</label>
    <input id="recover-email" type="email" autocomplete="username" required>
-   <div class="recovery-actions"><button type="submit" class="access-primary">Enviar link de recuperação</button>
+   <p class="access-note">A solicitação será encaminhada à caixa geral do Envase e da Refinaria.</p>
+   <div class="recovery-actions"><button type="submit" class="access-primary">Abrir solicitação por e-mail</button>
    <button type="button" class="access-link" data-recovery-back>Voltar ao login</button></div>
   </form>
   <form id="access-new-password" hidden>
@@ -876,16 +877,18 @@ for(const button of access.querySelectorAll('[data-recovery-back]'))button.oncli
  if(!newPasswordForm.hidden)await supabaseClient?.auth.signOut({scope:'local'});
  newPasswordForm.reset();accessMode(false);
 };
-recoveryForm.onsubmit=async event=>{
+const recoveryMailbox='envaserefinaria@gmail.com';
+function recoveryRequestUrl(address){
+ const subject=encodeURIComponent('Solicitação de recuperação de senha do painel');
+ const body=encodeURIComponent('Olá, preciso recuperar o acesso ao painel de Envase e Refinaria.\n\nE-mail cadastrado: '+address+'\n');
+ return 'mailto:'+recoveryMailbox+'?subject='+subject+'&body='+body;
+}
+recoveryForm.onsubmit=event=>{
  event.preventDefault();
- const address=coamoEmail($('#recover-email')),button=recoveryForm.querySelector('[type=submit]');
+ const address=coamoEmail($('#recover-email'));
  if(!allowedLoginEmail(address)){feedback.textContent='Informe o e-mail da conta.';return}
- button.disabled=true;
- try{
-  const {error}=await supabaseClient.auth.resetPasswordForEmail(address,{redirectTo:'https://painelenvref.vercel.app/?recuperar=1'});
-  feedback.textContent=error?'Não foi possível enviar o link. Tente novamente mais tarde.':'Se houver uma conta para esse endereço, confira a caixa de entrada e o spam.';
- }catch{feedback.textContent='Não foi possível conectar ao serviço de recuperação.'}
- finally{button.disabled=false}
+ feedback.textContent='Envie a mensagem no seu aplicativo de e-mail. Se ele não abrir, escreva para '+recoveryMailbox+' e informe o e-mail cadastrado.';
+ location.href=recoveryRequestUrl(address);
 };
 newPasswordForm.onsubmit=async event=>{
  event.preventDefault();
