@@ -529,7 +529,7 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
   <h1 id="access-title" tabindex="-1">Acesso ao painel</h1>
   <p class="access-note">Entre com sua conta Coamo.</p>
   <form id="access-login" novalidate>
-   <label for="access-email">E-mail Coamo</label>
+   <label for="access-email">E-mail</label>
    <input id="access-email" type="email" autocomplete="username" placeholder="usuario@coamo.com.br" required>
    <label for="access-password">Senha</label>
    <input id="access-password" type="password" autocomplete="current-password" required>
@@ -764,6 +764,7 @@ const approvedProfile=account=>account?.role==='management'?(account.grantedByMa
 
 const coamoEmail=(input)=>input.value.trim().toLowerCase();
 const allowedEmail=value=>/^[^\s@]+@coamo\.com\.br$/i.test(value);
+const allowedLoginEmail=value=>allowedEmail(value)||/^[^\s@]+@gmail\.com$/i.test(value);
 let buttonX=0,buttonY=0,vx=0,vy=0,accessFrame=0;
 const missingLogin=()=>!email.value.trim()||!password.value;
 function accessHome(){
@@ -866,7 +867,7 @@ login.addEventListener('submit',async e=>{
  e.preventDefault();
  const user=coamoEmail(email),secret=password.value;
  if(!user||!secret){feedback.textContent='Preencha o e-mail e a senha.';return}
- if(!allowedEmail(user)){feedback.textContent='Use um e-mail terminado em @coamo.com.br.';return}
+ if(!allowedLoginEmail(user)){feedback.textContent='Use seu e-mail Coamo ou o endereço Gmail autorizado.';return}
  enter.disabled=true;
  try{
   if(!supabaseClient)throw new Error('Cliente indisponível');
@@ -877,8 +878,9 @@ login.addEventListener('submit',async e=>{
    return;
   }
   const {data:profile,error:profileError}=await supabaseClient.from('panel_profiles')
-   .select('role,sector,approved').eq('user_id',data.user.id).maybeSingle();
+   .select('role,sector,approved,allow_external_email').eq('user_id',data.user.id).maybeSingle();
   if(profileError||!profile?.approved||!data.user.email_confirmed_at||
+   (!allowedEmail(user)&&!profile.allow_external_email)||
    !(profile.role==='management'||(profile.role==='operator'&&accessSectors.has(profile.sector)))){
    await supabaseClient.auth.signOut({scope:'local'});
    feedback.textContent=profileError?'Não foi possível consultar as permissões. Tente novamente.':'Seu perfil ainda não está aprovado para acessar o painel.';
