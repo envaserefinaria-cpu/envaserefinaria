@@ -1536,7 +1536,7 @@ return{P,F,pd,dias,fech,tt,nd,total:tt[1]+tt[2]+tt[3],prodF:fech.reduce((s,d)=>s
 const sum=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);
 const grp=F=>{const g={};F.forEach(f=>{const o=g[f.nome]=g[f.nome]||{nome:f.nome,n:0,min:0,l:[]};o.n++;o.min+=f.proc;o.l.push(f)});return Object.values(g)};
 const kpi=(l,v,s,c,tip)=>`<div class="kpi ${c&&c.trim()||''}" title="${esc(tip||'')}"><div class="kpihead">${l}</div><strong>${v}</strong><small>${s||''}</small></div>`;
-let animatedView=null,animateCharts=false;
+let animatedView=null;
 const ch=(id,type,data,opt)=>{
  const canvas=document.getElementById(id);
  if(!canvas||!window.Chart)return;
@@ -1547,7 +1547,7 @@ const ch=(id,type,data,opt)=>{
   animation:{duration:620,easing:'easeOutCubic'},
   ...opt
  };
- if(!animateCharts||prefersReducedMotion.matches)options.animation=false;
+ if(prefersReducedMotion.matches||matchMedia('print').matches)options.animation=false;
  CH.push(new Chart(canvas,{type,data,options}));
 };
 const cv=(id,h)=>`<div class="cv"${h?` style="height:${h}px"`:''}><canvas id="${id}"></canvas></div>`;
@@ -2460,7 +2460,6 @@ function render(){if(!canOpenSector(AREA))return;if(M==='cfg'&&!isManagement())M
  const viewChanged=animatedView!==view;
  if(viewChanged)stopPanelMotion();
  animatedView=view;
- animateCharts=viewChanged;
  CH.forEach(c=>c.destroy());CH=[];S=calc();const TT={visao:'Visão geral da operação',prod:'Produção e turnos',t1:'Desempenho do Turno A',t2:'Desempenho do Turno B',t3:'Desempenho do Turno C',ins:'Consumo e perdas',fal:'Paradas e falhas',ord:'Ordem de produção',rel:'Relatório',proj:'Projeção de fechamento do mês',qual:'Qualidade dos dados',custos:'Análise de custos',imp:'Dados e importação',cfg:'Configurações'};
 $('#nav').innerHTML=MENU.map(([group,items])=>`<div class="nav-group"><div class="navlabel">${group}</div>
 ${items.filter(([key])=>key!=='cfg'||isManagement()).map(([key,label])=>`<button type="button" data-m="${key}" ${key===M?'class="on" aria-current="page"':''}><span class="ico" aria-hidden="true">${menuIcons[key]}</span>${label}</button>`).join('')}</div>`).join('');
@@ -2486,7 +2485,6 @@ document.body.classList.toggle('rpt',M==='rel'&&REPON);$('#bar').hidden=M==='cus
    if(index<4)animatePanel(item,{duration:240,distance:5,delay:index*28,opacity:.68});
   });
  }
- animateCharts=false;
 }
 if(window.Chart){Chart.defaults.color=css('--mut');Chart.defaults.font.size=innerWidth<720?10:12;}let printCharts=[];
 function preparePrint(){
