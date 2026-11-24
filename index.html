@@ -536,7 +536,7 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
    <div id="access-dock">
     <button type="submit" id="access-submit" class="access-primary" aria-describedby="access-status">Entrar</button>
    </div>
-   <div class="access-actions"><button type="button" class="access-link" id="access-register-link">Criar conta</button>
+   <div class="access-actions"><button type="button" class="access-link" id="access-register-link">Criar conta</button><button type="button" class="access-link" id="access-recover-link">Esqueci minha senha</button>
    </div>
   </form>
   <form id="access-register" hidden novalidate>
@@ -563,6 +563,20 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
    <input id="register-confirm" type="password" minlength="8" autocomplete="new-password" required>
    <button type="submit" class="access-primary">Cadastrar</button>
    <button type="button" class="access-link" id="access-back">Voltar ao login</button>
+  </form>
+  <form id="access-recovery" hidden>
+   <label for="recover-email">E-mail da conta</label>
+   <input id="recover-email" type="email" autocomplete="username" required>
+   <button type="submit" class="access-primary">Enviar link de recuperação</button>
+   <button type="button" class="access-link" data-recovery-back>Voltar ao login</button>
+  </form>
+  <form id="access-new-password" hidden>
+   <label for="new-password">Nova senha</label>
+   <input id="new-password" type="password" autocomplete="new-password" minlength="8" required>
+   <label for="new-confirm">Confirme a nova senha</label>
+   <input id="new-confirm" type="password" autocomplete="new-password" minlength="8" required>
+   <button type="submit" class="access-primary">Salvar nova senha</button>
+   <button type="button" class="access-link" data-recovery-back>Voltar ao login</button>
   </form>
   <p id="access-status" role="status" aria-live="polite"></p>
  </section>
@@ -708,6 +722,7 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
  const t=new URLSearchParams(window.location.search).get('t'),seconds=t==null?null:Number(t);
  window.addEventListener('coamo:signin',()=>showIntro({afterLogin:true}));
  if(seconds!=null&&Number.isFinite(seconds))showIntro({freeze:Math.min(2699,Math.max(0,seconds*1000))});
+ else if(new URLSearchParams(location.search).has('recuperar'))closeIntro();
  else showVideoOpening();
 })();
 </script>
@@ -824,7 +839,9 @@ enter.addEventListener('pointerdown',e=>{
 });
 for(const input of [email,password])input.addEventListener('input',()=>{track.dataset.ready=String(!missingLogin());if(!missingLogin())dockAccess()});
 enter.addEventListener('focus',()=>{if(enter.matches(':focus-visible'))dockAccess()});
+const recoveryForm=$('#access-recovery'),newPasswordForm=$('#access-new-password');
 function accessMode(create,message=''){
+ recoveryForm.hidden=true;newPasswordForm.hidden=true;
  login.hidden=create;register.hidden=!create;
  $('#access-title').textContent=create?'Cadastro de usuário':'Acesso ao painel';
  feedback.textContent=message;dockAccess();
@@ -834,6 +851,67 @@ function accessMode(create,message=''){
 }
 $('#access-register-link').onclick=()=>accessMode(true);
 $('#access-back').onclick=()=>{register.reset();accessMode(false)};
+function recoveryMode(form,title){
+ login.hidden=true;register.hidden=true;
+ recoveryForm.hidden=form!==recoveryForm;newPasswordForm.hidden=form!==newPasswordForm;
+ $('#access-title').textContent=title;
+ animatePanel(form,{duration:220,distance:6});
+ form.querySelector('input').focus();
+}
+$('#access-recover-link').onclick=()=>{
+ $('#recover-email').value=email.value;
+ feedback.textContent='';
+ recoveryMode(recoveryForm,'Recuperar senha');
+};
+for(const button of access.querySelectorAll('[data-recovery-back]'))button.onclick=async()=>{
+ if(!newPasswordForm.hidden)await supabaseClient?.auth.signOut({scope:'local'});
+ newPasswordForm.reset();accessMode(false);
+};
+recoveryForm.onsubmit=async event=>{
+ event.preventDefault();
+ const address=coamoEmail($('#recover-email')),button=recoveryForm.querySelector('[type=submit]');
+ if(!allowedLoginEmail(address)){feedback.textContent='Informe o e-mail da conta.';return}
+ button.disabled=true;
+ try{
+  const {error}=await supabaseClient.auth.resetPasswordForEmail(address,{redirectTo:'https://painelenvref.vercel.app/?recuperar=1'});
+  feedback.textContent=error?'Não foi possível enviar o link. Tente novamente mais tarde.':'Se houver uma conta para esse endereço, confira a caixa de entrada e o spam.';
+ }catch{feedback.textContent='Não foi possível conectar ao serviço de recuperação.'}
+ finally{button.disabled=false}
+};
+newPasswordForm.onsubmit=async event=>{
+ event.preventDefault();
+ const value=$('#new-password').value,button=newPasswordForm.querySelector('[type=submit]');
+ if(value!==$('#new-confirm').value){feedback.textContent='As senhas precisam ser iguais.';return}
+ button.disabled=true;
+ try{
+  const {error}=await supabaseClient.auth.updateUser({password:value});
+  if(error){feedback.textContent='Não foi possível salvar a senha. Confira os requisitos ou solicite um novo link.';return}
+  await supabaseClient.auth.signOut({scope:'local'});
+  newPasswordForm.reset();accessMode(false,'Senha atualizada. Entre com a nova senha.');
+ }catch{feedback.textContent='Não foi possível conectar ao serviço de recuperação.'}
+ finally{button.disabled=false}
+};
+async function openRecoveryLink(){
+ const url=new URL(location.href);
+ if(!url.searchParams.has('recuperar'))return;
+ const fragment=new URLSearchParams(url.hash.slice(1));
+ url.searchParams.delete('recuperar');url.hash='';
+ history.replaceState(null,'',url);
+ if(fragment.get('type')==='recovery'&&fragment.get('access_token')&&fragment.get('refresh_token')){
+  try{
+   const {data,error}=await supabaseClient.auth.setSession({access_token:fragment.get('access_token'),refresh_token:fragment.get('refresh_token')});
+   if(!error&&data.session){
+    email.value=data.user.email||'';
+    feedback.textContent='Use pelo menos oito caracteres.';
+    recoveryMode(newPasswordForm,'Definir nova senha');
+    return;
+   }
+  }catch{}
+ }
+ recoveryMode(recoveryForm,'Recuperar senha');
+ feedback.textContent='O link de recuperação está inválido ou venceu. Solicite um novo.';
+}
+void openRecoveryLink();
 register.addEventListener('submit',async e=>{
  e.preventDefault();
  const user=coamoEmail($('#register-email')),secret=$('#register-password').value;
