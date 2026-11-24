@@ -773,20 +773,12 @@ const enter=$('#access-submit'),email=$('#access-email'),password=$('#access-pas
 const feedback=$('#access-status');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)');
 const role=$('#register-role'),sector=$('#register-sector'),nameInput=$('#register-name');
-const normalizeName=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ').toLowerCase();
-const managementNames=new Set([
- 'Pedro Negrao','Pedro Augusto','Robson Orlando','Jherlly Marlon Domingues','João Vitor Dantas',
- 'Antonio Marcos Lima','Anderson paulena daniel','Wandemir silva','paulo zanuto','Leonardo'
-].map(normalizeName));
 function updateRegistrationSector(){
  const operator=role.value==='operator';
  $('#register-sector-field').hidden=!operator;
  sector.disabled=!operator;sector.required=operator;
 }
 role.onchange=updateRegistrationSector;
-const approvedProfile=account=>account?.role==='management'?(account.grantedByManager===true||managementNames.has(normalizeName(account.name))):
- account?.role==='operator'&&accessSectors.has(account.sector);
-
 const coamoEmail=(input)=>input.value.trim().toLowerCase();
 const allowedEmail=value=>/^[^\s@]+@coamo\.com\.br$/i.test(value);
 const allowedLoginEmail=value=>allowedEmail(value)||/^[^\s@]+@gmail\.com$/i.test(value);
@@ -929,25 +921,22 @@ register.addEventListener('submit',async e=>{
  const button=register.querySelector('[type=submit]');
  if(!allowedEmail(user)){feedback.textContent='Use um e-mail terminado em @coamo.com.br.';return}
  if(!profile.name){feedback.textContent='Informe o nome.';return}
- if(!approvedProfile(profile)){
-  feedback.textContent=profile.role==='management'?'Este nome não está autorizado a criar conta de Gestão.':'Selecione o setor do operador.';
-  return;
- }
+ if(profile.role==='operator'&&!accessSectors.has(profile.sector)){feedback.textContent='Selecione o setor do operador.';return}
  if(secret.length<8){feedback.textContent='Use pelo menos oito caracteres na senha.';return}
  if(secret!==$('#register-confirm').value){feedback.textContent='As senhas precisam ser iguais.';return}
  button.disabled=true;
  try{
   if(!supabaseClient)throw new Error('Cliente indisponível');
-  const {error}=await supabaseClient.auth.signUp({
+  const {data,error}=await supabaseClient.auth.signUp({
    email:user,password:secret,options:{data:{name:profile.name,requested_role:profile.role,requested_sector:profile.sector}}
   });
   if(error){
    feedback.textContent=error.status===429?'Limite de envio atingido. Tente mais tarde.':'Não foi possível enviar o cadastro. Se já possui uma conta, volte ao login.';
    return;
   }
-  await supabaseClient.auth.signOut({scope:'local'});
+  if(data.session)await supabaseClient.auth.signOut({scope:'local'});
   register.reset();email.value=user;password.value='';
-  accessMode(false,'Confirme seu e-mail e aguarde a aprovação do perfil.');
+  accessMode(false,data.session?'Cadastro enviado. Aguarde a autorização de um gestor.':'Confirme seu e-mail e aguarde a aprovação do perfil.');
  }catch(error){feedback.textContent='Não foi possível conectar ao serviço de cadastro.'}
  finally{button.disabled=false}
 });
@@ -2237,7 +2226,7 @@ function bindAccountControl(){
    output.innerHTML=refTable(['Nome','E-mail','Perfil','Setor','Situação','Ações'],accounts.map(row=>
     '<tr><td>'+esc(row.name||'–')+'</td><td>'+esc(row.email)+'</td><td>'+(row.role==='management'?'Gestão':'Operador')+
     '</td><td>'+(row.role==='management'?'Ambos':AREAS[row.sector]?.name||'–')+
-    '</td><td>'+(row.approved?'Ativo':row.confirmed?'Sem acesso':'E-mail pendente')+'</td><td>'+controls(row)+'</td></tr>'
+    '</td><td>'+(row.approved?'Ativo':row.confirmed?'Aguardando aprovação / sem acesso':'Cadastro antigo sem confirmação')+'</td><td>'+controls(row)+'</td></tr>'
    ));
    status.textContent=message;
   }catch{if(panel.isConnected)status.textContent='Não foi possível carregar os usuários.'}
