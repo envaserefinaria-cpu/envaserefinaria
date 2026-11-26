@@ -566,6 +566,7 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
   <header class="access-brand"><img id="access-logo" alt="Coamo"><div><strong>Painel industrial</strong><small>Envase e Refinaria</small></div></header>
   <h1 id="access-title" tabindex="-1">Acesso ao painel</h1>
   <p class="access-note">Entre com sua conta Coamo.</p>
+  <button type="button" class="access-link" id="login-video-play" hidden>Reproduzir vídeo de fundo</button>
   <form id="access-login" novalidate>
    <label for="access-email">E-mail</label>
    <input id="access-email" type="email" autocomplete="username" placeholder="usuario@coamo.com.br" required>
@@ -690,7 +691,15 @@ backgroundVideo.addEventListener('loadedmetadata',()=>{
 backgroundVideo.addEventListener('timeupdate',()=>{
  if(backgroundVideo.currentTime>=7){stopLoginBackground();backgroundVideo.currentTime=7}
 });
-if(!prefersReducedMotion.matches)void backgroundVideo.play().catch(()=>{});
+const videoPlay=$('#login-video-play');
+function playLoginBackground(){
+ videoPlay.hidden=true;
+ if(backgroundVideo.currentTime>=7)backgroundVideo.currentTime=0;
+ void backgroundVideo.play().catch(()=>{videoPlay.hidden=false});
+}
+videoPlay.onclick=playLoginBackground;
+if(prefersReducedMotion.matches)videoPlay.hidden=false;
+else playLoginBackground();
 const access=$('#coamo-access'),login=$('#access-login'),register=$('#access-register');
 const enter=$('#access-submit'),email=$('#access-email'),password=$('#access-password');
 const feedback=$('#access-status');
