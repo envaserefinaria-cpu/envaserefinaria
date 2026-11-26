@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8">
+<html lang="pt-BR" data-theme="light"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Painel industrial • Coamo</title>
 <style>
-:root{--bg:#f3f6fb;--sf:#fff;--tx:#17243a;--mut:#6d7b90;--bd:#e5ebf3;--pri:#2864dc;--am:#e69a2d;--turn-b:#efcf28;--bl:#16a6b7;--ok:#14966c;--wa:#e69a2d;--er:#d95757;--na:#8a97aa;--sb:#101d32;--sbt:#aebbd0;--sh:0 8px 28px #17243a0c;--hd:#f8fafd;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{color-scheme:light;--bg:#f3f6fb;--sf:#fff;--tx:#17243a;--mut:#6d7b90;--bd:#e5ebf3;--pri:#2864dc;--am:#e69a2d;--turn-b:#efcf28;--bl:#16a6b7;--ok:#14966c;--wa:#e69a2d;--er:#d95757;--na:#8a97aa;--sb:#101d32;--sbt:#aebbd0;--sh:0 8px 28px #17243a0c;--hd:#f8fafd;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0c1627;--sf:#14223a;--tx:#e3ebf7;--mut:#93a3bc;--bd:#243653;--pri:#5b8cf0;--ok:#2fc08f;--er:#ec7a7a;--sb:#08111f;--sh:none;--hd:#192a45}}
 :root[data-theme="dark"]{color-scheme:dark;--bg:#0c1627;--sf:#14223a;--tx:#e3ebf7;--mut:#93a3bc;--bd:#243653;--pri:#5b8cf0;--ok:#2fc08f;--er:#ec7a7a;--sb:#08111f;--sh:none;--hd:#192a45}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -277,12 +277,12 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
 #coamo-access .access-link{color:var(--login-blue)}
 #coamo-access .access-link:hover{background:var(--login-track)}
 @media(prefers-color-scheme:dark){
- :is(#coamo-access,#home,#brand-intro).coamo-test-theme{
+ :root:not([data-theme="light"]) :is(#coamo-access,#home,#brand-intro).coamo-test-theme{
   --login-ink:#eef6ed;--login-muted:#bdd2c2;--login-blue:#9ddeab;
   --login-border:#375b4a;--login-field:#112820;--login-surface:#173326;--login-track:#122c23;
   background:radial-gradient(ellipse at 87% 9%,#a476363f,transparent 40%),linear-gradient(145deg,#101f18,#1c3c2c);
  }
- :is(#coamo-access,#home).coamo-test-theme :is(.access-card,.home-panel){border-color:var(--login-border)}
+ :root:not([data-theme="light"]) :is(#coamo-access,#home).coamo-test-theme :is(.access-card,.home-panel){border-color:var(--login-border)}
 }
 #home.coamo-test-theme .home-panel{
  width:min(100%,744px);padding:clamp(22px,5vw,42px);
@@ -319,8 +319,8 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
 #home .sector-arrow{width:28px;height:28px;border-radius:50%;font-size:15px}
 #home :is(.home-options button,#access-logout):focus-visible{outline:2px solid var(--login-blue);outline-offset:3px}
 @media(prefers-color-scheme:dark){
- #home.coamo-test-theme .home-options button{--sector-tone:#b6f0c2;--sector-highlight:#24523a}
- #home.coamo-test-theme .home-options [data-area=refinaria]{--sector-tone:#f7d99b;--sector-highlight:#4e3c20}
+ :root:not([data-theme="light"]) #home.coamo-test-theme .home-options button{--sector-tone:#b6f0c2;--sector-highlight:#24523a}
+ :root:not([data-theme="light"]) #home.coamo-test-theme .home-options [data-area=refinaria]{--sector-tone:#f7d99b;--sector-highlight:#4e3c20}
 }
 @media(max-width:460px){
  #home.home-screen{padding:14px}
@@ -408,7 +408,6 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
  }
  .coamo-glass #coamo-access .access-card{
   width:min(100%,390px);margin:0;padding:18px 18px 13px;border-radius:22px;
-  background:linear-gradient(145deg,#ffffff47,#f1f9ef20);
  }
  .coamo-glass #coamo-access .access-card::before{left:22px;right:22px}
  .coamo-glass #coamo-access .access-backdrop-logo{
@@ -511,7 +510,38 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
  #coamo-access .recovery-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
  #coamo-access .recovery-actions button{width:100%;text-align:center;white-space:normal}
 }
-#account-control td:last-child .bar{flex-wrap:wrap;margin:0}
+#account-control{min-width:0}
+#account-control .account-heading{display:flex;justify-content:space-between;align-items:baseline;gap:8px 16px;flex-wrap:wrap;margin-bottom:13px}
+#account-control .account-heading h3{margin:0}
+#account-control .account-filters{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:10px;margin-bottom:12px}
+#account-control label{display:grid;gap:4px;color:#36564f;font-size:.85rem;font-weight:650;min-width:0}
+#account-control :is(input,select){width:100%;min-width:0;min-height:44px}
+#account-control #account-status:empty{display:none}
+#account-control #account-list{display:grid;gap:9px;min-width:0}
+#account-control .account-row{border:1px solid #fff;border-radius:14px;background:#ffffff75;min-width:0}
+#account-control .account-row :is(summary,.account-self){display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px 12px;min-height:60px;padding:10px 13px;list-style:none}
+#account-control details.account-row summary{cursor:pointer}
+#account-control .account-row summary::-webkit-details-marker{display:none}
+#account-control .account-identity{min-width:0;overflow-wrap:anywhere}
+#account-control .account-identity :is(strong,small){display:block}
+#account-control .account-identity small{color:#405e54}
+#account-control .account-meta{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:3px;color:#36564f;font-size:.8rem}
+#account-control .account-state{padding:4px 8px;border-radius:999px;background:#f5e8c5;color:#674811;font-weight:650;font-size:.75rem}
+#account-control .account-state.active{background:#d9eee2;color:#16533a}
+#account-control .account-state.unconfirmed{background:#e6e8ed;color:#405168}
+#account-control .account-manage{color:#155940;font-weight:650;font-size:.8rem}
+#account-control .account-manage::after{content:" ▾"}
+#account-control details[open] .account-manage::after{content:" ▴"}
+#account-control .account-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:end;padding:12px 13px;border-top:1px solid #cfdfd5}
+#account-control .account-actions button{min-height:44px;white-space:normal}
+#account-control .account-actions button[data-access=delete]{color:#8b3130;border-color:#d7a8a2}
+#account-control :is(summary,input,select,button):focus-visible{outline:2px solid #17664d;outline-offset:2px}
+@media(max-width:550px){
+ #account-control .account-filters{grid-template-columns:minmax(0,1fr)}
+ #account-control .account-row :is(summary,.account-self){grid-template-columns:minmax(0,1fr) auto}
+ #account-control .account-identity{grid-column:1/-1}
+ #account-control .account-actions label{flex-basis:100%}
+}
 
 @media screen{
  #dashboard{background:radial-gradient(ellipse at 100% 0%,#f4e4b8,transparent 46%),radial-gradient(ellipse at 5% 90%,#9dceb8,transparent 56%),linear-gradient(145deg,#ecf5e9,#d5ebe1)}
@@ -520,7 +550,7 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
  .side{scrollbar-width:none}
  .side::-webkit-scrollbar{display:none}
  body.coamo-glass:has(#dashboard:not([hidden])){background:radial-gradient(ellipse at 1% 10%,#bbd6b3,transparent 45%),radial-gradient(ellipse at 8% 90%,#6eb5a4,transparent 45%),#345865}
- body.coamo-glass .side{background:radial-gradient(ellipse at 0% 3%,#b8f5ce42,transparent 38%),linear-gradient(155deg,#163d38b8,#142c3be3 47%,#124d3bb5);border-inline-end:1px solid #ffffff80;box-shadow:inset 0 1px #ffffff65,inset -1px 0 #ffffff3d,0 10px 36px #0c372648;backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
+ body.coamo-glass .side{--side-glass:radial-gradient(ellipse at 0% 3%,#b8f5ce42,transparent 38%),linear-gradient(155deg,#163d38b8,#142c3be3 47%,#124d3bb5);background:var(--side-glass);border-inline-end:1px solid #ffffff80;box-shadow:inset 0 1px #ffffff65,inset -1px 0 #ffffff3d,0 10px 36px #0c372648;backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
  body.coamo-glass .side .nav button.on{background:linear-gradient(115deg,#427867ac,#254d43b3);box-shadow:inset 0 1px #ffffff36}
  body.coamo-glass .side .home-back{background:linear-gradient(115deg,#3a6e5c99,#1a4d40a8);box-shadow:inset 0 1px #ffffff28}
  body.coamo-glass .side .nav-toggle{background:#ffffff12;border-color:#ffffff45}
@@ -557,8 +587,8 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
 }
 @media screen and (max-width:780px){
  .coamo-glass #coamo-access{isolation:isolate;align-content:center;min-height:100svh;padding:calc(env(safe-area-inset-top) + 68px) max(12px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 14px) max(12px,env(safe-area-inset-left))}
- .coamo-glass :is(#coamo-access,#home) .login-background-video{object-position:center top;opacity:.76}
- .coamo-glass #coamo-access .access-card{min-width:0;width:min(100%,410px);margin-inline:0;background:linear-gradient(145deg,#fbfff1b0,#f0f9e980)}
+ .coamo-glass :is(#coamo-access,#home) .login-background-video{object-position:center top}
+ .coamo-glass #coamo-access .access-card{min-width:0;width:min(100%,410px);margin-inline:0}
  .coamo-glass #coamo-access .access-backdrop-logo{top:calc(env(safe-area-inset-top) + 12px);width:min(140px,45vw)}
  .coamo-glass #coamo-access #access-dock{height:auto;min-height:44px;margin:12px 0 0}
  .coamo-glass #coamo-access #access-submit{width:100%;min-width:0}
@@ -568,6 +598,9 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
 }
 @media screen and (max-height:480px) and (orientation:landscape){
  .coamo-glass #coamo-access{align-content:start;padding-block:12px}
+}
+@media screen and (max-width:720px){
+ body.coamo-glass .side #nav{background:var(--side-glass),#1e3b41;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
 }
 </style></head><body class="home coamo-glass">
 <main class="coamo-test-theme" id="coamo-access" aria-labelledby="access-title">
@@ -2174,34 +2207,55 @@ function aRefOperation(){
 }
 function accountControl(){
  if(!isManagement())return '';
- return '<section class="card noprint" id="account-control"><h3>Controle de usuários</h3><p id="account-status" role="status">Carregando usuários…</p><div id="account-list"></div></section>';
+ return '<section class="card noprint" id="account-control"><header class="account-heading"><h3>Controle de usuários</h3><small id="account-count" class="mut"></small></header>'+
+  '<div class="account-filters"><label>Buscar usuário<input type="search" id="account-search" placeholder="Nome ou e-mail"></label>'+
+  '<label>Situação<select id="account-filter"><option value="all">Todas as situações</option><option value="active">Ativos</option><option value="pending">Sem acesso</option><option value="unconfirmed">E-mail não confirmado</option></select></label></div>'+
+  '<p id="account-status" role="status">Carregando usuários…</p><div id="account-list"></div></section>';
 }
 function bindAccountControl(){
  const panel=$('#account-control'),output=$('#account-list'),status=$('#account-status');
  if(!panel)return;
  let accounts=[];
- const controls=(row)=>{
-  if(row.email?.toLowerCase()===accessProfile.email)return 'Sua conta';
+ const search=$('#account-search'),filter=$('#account-filter'),count=$('#account-count');
+ const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+ const state=row=>row.approved?'active':row.confirmed?'pending':'unconfirmed';
+ const labels={active:'Ativo',pending:'Sem acesso',unconfirmed:'E-mail não confirmado'};
+ function controls(row){
   const id=esc(row.user_id);
   const button=(action,label)=>'<button type="button" class="g" data-account="'+id+'" data-access="'+action+'">'+label+'</button>';
-  const remove=button('delete','Excluir colaborador');
-  if(!row.confirmed)return 'Aguardando confirmação do e-mail '+remove;
-  return '<div class="bar"><select aria-label="Setor do operador" data-operator-sector="'+id+'"><option value="envase" '+(row.sector==='envase'?'selected':'')+'>Envase</option><option value="refinaria" '+(row.sector==='refinaria'?'selected':'')+'>Refinaria</option></select>'+
-   button('operator',row.approved?'Definir como operador':'Aprovar operador')+
-   (row.role==='management'&&row.approved?'':button('management','Dar acesso de Gestão'))+
-   (row.approved?button('revoke','Revogar acesso'):'')+remove+'</div>';
- };
+  let actions=button('delete','Excluir colaborador');
+  if(row.confirmed){
+   actions='<label>Setor do operador<select data-operator-sector="'+id+'"><option value="envase" '+(row.sector==='envase'?'selected':'')+'>Envase</option><option value="refinaria" '+(row.sector==='refinaria'?'selected':'')+'>Refinaria</option></select></label>'+
+    button('operator',row.approved?'Definir como operador':'Aprovar operador')+
+    (row.role==='management'&&row.approved?'':button('management','Dar acesso de Gestão'))+
+    (row.approved?button('revoke','Revogar acesso'):'')+actions;
+  }
+  return '<div class="account-actions">'+actions+'</div>';
+ }
+ function draw(){
+  const term=normalize(search.value);
+  const visible=accounts.filter(row=>(filter.value==='all'||state(row)===filter.value)&&
+    (!term||normalize(row.name).includes(term)||normalize(row.email).includes(term)));
+  count.textContent=visible.length===accounts.length?accounts.length+' '+(accounts.length===1?'usuário':'usuários'):visible.length+' de '+accounts.length+' usuários';
+  output.innerHTML=visible.map(row=>{
+   const own=row.email?.toLowerCase()===accessProfile.email.toLowerCase();
+   const management=row.role==='management',situation=state(row);
+   const identity='<span class="account-identity"><strong>'+esc(row.name||row.email||'Usuário')+'</strong>'+
+    (row.name?'<small>'+esc(row.email)+'</small>':'')+
+    '<span class="account-meta">'+(management?'Gestão':'Operador')+' · '+(management?'Ambos os setores':esc(AREAS[row.sector]?.name||'Sem setor'))+'</span></span>';
+   const badges='<span class="account-state '+situation+'">'+labels[situation]+'</span>';
+   if(own)return '<article class="account-row"><div class="account-self">'+identity+badges+'<small>Sua conta</small></div></article>';
+   return '<details class="account-row"><summary>'+identity+badges+'<span class="account-manage">Gerenciar</span></summary>'+controls(row)+'</details>';
+  }).join('')||'<p class="mut">Nenhum usuário encontrado.</p>';
+ }
+ search.oninput=filter.onchange=draw;
  async function load(message=''){
   try{
    const {data,error}=await supabaseClient.rpc('panel_manage_list');
    if(error)throw error;
    if(!panel.isConnected)return;
-   accounts=data;
-   output.innerHTML=refTable(['Nome','E-mail','Perfil','Setor','Situação','Ações'],accounts.map(row=>
-    '<tr><td>'+esc(row.name||'–')+'</td><td>'+esc(row.email)+'</td><td>'+(row.role==='management'?'Gestão':'Operador')+
-    '</td><td>'+(row.role==='management'?'Ambos':AREAS[row.sector]?.name||'–')+
-    '</td><td>'+(row.approved?'Ativo':row.confirmed?'Aguardando aprovação / sem acesso':'Cadastro antigo sem confirmação')+'</td><td>'+controls(row)+'</td></tr>'
-   ));
+   accounts=data||[];
+   draw();
    status.textContent=message;
   }catch{if(panel.isConnected)status.textContent='Não foi possível carregar os usuários.'}
  }
