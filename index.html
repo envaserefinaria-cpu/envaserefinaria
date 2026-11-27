@@ -648,22 +648,40 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
  .side .nav-toggle-copy strong{color:#fff;font-size:.88rem;overflow-wrap:anywhere}
  body.coamo-glass .side #nav{padding:7px 10px 12px;border-top:1px solid #ffffff40}
 }
-.profile-strip{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 14px;margin:12px 0 16px;padding:8px 12px;border:1px solid #ffffffb0;border-radius:14px;background:#f2fff686;color:#174236}
-.profile-strip .profile-name{font-weight:700;overflow-wrap:anywhere}
+.profile-strip,.profile-dialog,#profile-alert{--profile-ink:#153d30;--profile-green:#155b44;--profile-line:#b8d0c2;--profile-muted:#405e53;color:var(--profile-ink)}
+.profile-strip{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 14px;margin:12px 0 16px;padding:9px 12px;border:1px solid #ffffffe0;border-radius:16px;background:linear-gradient(120deg,#edf9f2c9,#fbfaf0a8);box-shadow:inset 0 1px #ffffffba}
+.profile-identity{display:flex;align-items:center;gap:10px;min-width:0}
+.profile-name{font-weight:720;line-height:1.3;overflow-wrap:anywhere}
+.profile-avatar,.profile-icon-tile{display:grid;place-items:center;flex:none;width:38px;height:38px;border:1px solid #b9d9c7;border-radius:11px;background:#d9eddf;color:var(--profile-green);font-size:.79rem;font-weight:780}
+.profile-icon{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
 .profile-strip .profile-actions,.profile-dialog .profile-actions,#profile-alert .profile-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
-.profile-strip button,.profile-dialog button,#profile-alert button{min-height:44px}
-.profile-dialog{width:min(calc(100% - 24px),620px);max-height:calc(100dvh - 24px);padding:clamp(14px,3vw,26px);border:1px solid #becfc6;border-radius:18px;background:#f6fbf7;color:#173b30;box-shadow:0 20px 70px #12382e45;overflow:auto}
-.profile-dialog::backdrop{background:#102a2280}
-.profile-dialog header{display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.profile-strip .btn,.profile-dialog .btn,#profile-alert .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:7px 12px;border:1px solid var(--profile-line);border-radius:11px;background:#f4fbf6d9;color:var(--profile-green);font-weight:650}
+.profile-strip .btn:hover,.profile-dialog .btn:hover,#profile-alert .btn:hover{background:#e3f3e8;border-color:#83ae97}
+.profile-strip [data-open-inbox],.profile-dialog .btn.primary,#profile-alert .btn.primary{border-color:#175840;background:linear-gradient(135deg,#236d53,#124936);color:#fff}
+.profile-strip [data-open-inbox]:hover,.profile-dialog .btn.primary:hover,#profile-alert .btn.primary:hover{background:#104731;border-color:#104731}
+.profile-badge{display:grid;place-items:center;min-width:22px;height:22px;padding-inline:4px;border-radius:999px;background:#ffeab7;color:#513609;font-size:.75rem;font-weight:800}
+.profile-strip :is(button):focus-visible,.profile-dialog :is(button,summary,input,textarea,select):focus-visible,#profile-alert button:focus-visible{outline:2px solid #145c43;outline-offset:2px}
+.profile-dialog{width:min(calc(100% - 24px),620px);max-height:calc(100dvh - 24px);padding:clamp(16px,3vw,28px);border:1px solid #f9fffb;border-radius:21px;background:radial-gradient(ellipse at 100% 0%,#f3e6c3d9,transparent 53%),linear-gradient(145deg,#fafffbed,#e0efe5ed);box-shadow:0 22px 64px #12382e50;overflow:auto;backdrop-filter:blur(16px) saturate(120%);-webkit-backdrop-filter:blur(16px) saturate(120%)}
+.profile-dialog::before,#profile-alert::before{content:"";position:absolute;inset:0 18px auto;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,#165c46,#6b9c55 65%,#e4b347)}
+.profile-dialog::backdrop{background:#17382e70;backdrop-filter:blur(3px)}
+.profile-dialog header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.profile-dialog header h2{margin:0;color:var(--profile-ink)}
+.profile-dialog .mut{color:var(--profile-muted);font-size:.87rem}
+#profile-dialog .profile-identity{padding:12px;border:1px solid #d0e1d6;border-radius:14px;background:#f7fcf7b3}
+#profile-dialog .profile-identity>div{min-width:0}
+#profile-email{margin:2px 0 0;overflow-wrap:anywhere}
+#profile-title:focus,#profile-inbox-title:focus{outline:none}
 .profile-dialog :is(h2,h3,p){overflow-wrap:anywhere}
 .profile-dialog label{display:grid;gap:4px;margin:10px 0;font-weight:650}
-.profile-dialog :is(input,textarea){width:100%;min-height:44px;color:#173b30;background:#fff;border:1px solid #b9cfc1;border-radius:10px;padding:9px 11px;font:inherit}
+.profile-dialog :is(input,textarea,select){width:100%;min-height:44px;color:var(--profile-ink);background:#fbfffb;border:1px solid var(--profile-line);border-radius:10px;padding:9px 11px;font:inherit}
 .profile-dialog textarea{min-height:130px;resize:vertical}
-.profile-dialog details{margin:12px 0;padding:10px 12px;border:1px solid #c6d8cc;border-radius:12px}
-.profile-dialog summary{cursor:pointer;font-weight:650;padding-block:8px}
+.profile-dialog details{max-width:none;margin:12px 0 18px;padding:0 12px;border:1px solid var(--profile-line);border-radius:12px;background:#eff9f2bd}
+.profile-dialog details[open]{padding-bottom:12px}
+.profile-dialog summary{cursor:pointer;min-height:44px;font-weight:650;padding:11px 0;color:var(--profile-green)}
+.profile-dialog button:disabled{opacity:.57;cursor:not-allowed}
 .profile-dialog [role=status]:empty{display:none}
 #profile-inbox{display:grid;gap:8px;margin-bottom:8px}
-.notice-card{padding:12px;border:1px solid #d0ddd5;border-radius:12px;background:#fff}
+.notice-card{padding:12px;border:1px solid #cfdfd5;border-radius:12px;background:#fafffbcf}
 .notice-card.unread{border-inline-start:4px solid #1c7254}
 .notice-card small{color:#435f53}
 .notice-card p{white-space:pre-wrap;margin:6px 0}
@@ -676,11 +694,17 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
 #operation-recipient-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,205px),1fr));gap:6px;max-height:220px;overflow:auto;padding:4px}
 #operation-recipient-list label{display:flex;align-items:center;gap:8px;min-height:44px;margin:0;padding:6px 8px;border-radius:8px;background:#e6f2e9;overflow-wrap:anywhere}
 #operation-recipient-list input{width:18px;min-height:18px;flex:none;accent-color:#166347}
-#profile-alert{position:fixed;z-index:120;inset:auto 16px max(16px,env(safe-area-inset-bottom)) auto;width:min(395px,calc(100% - 32px));padding:14px;border:1px solid #a8cab8;border-radius:16px;background:#f6fbf7;color:#173b30;box-shadow:0 15px 45px #153b2b40}
-#profile-alert p{margin:5px 0 9px;overflow-wrap:anywhere}
-@media(max-width:480px){.profile-strip .profile-name{flex-basis:100%}.profile-strip .profile-actions{width:100%}.profile-strip button{flex:1}}
+#profile-alert{position:fixed;z-index:120;inset:auto max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) auto;width:min(395px,calc(100% - 32px));padding:15px 16px;border:1px solid #fafffb;border-radius:17px;background:linear-gradient(140deg,#f7fff8f2,#e2f2e7eb 67%,#f3e9cbed);box-shadow:0 14px 42px #14362945;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.profile-alert-copy{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:10px;margin-bottom:11px}
+#profile-alert .profile-icon-tile{border-color:#efd59b;background:#faeac1;color:#714e12}
+#profile-alert p{margin:3px 0 0;color:var(--profile-muted);overflow-wrap:anywhere}
+@media(max-width:480px){.profile-strip .profile-identity,.profile-strip .profile-actions{width:100%}.profile-strip button{flex:1}.profile-dialog .btn,#profile-alert .btn{padding-inline:9px}}
 @media print{.profile-dialog,#profile-alert{display:none!important}}
 </style></head><body class="home coamo-glass">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="profile-icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1"/></symbol>
+ <symbol id="profile-icon-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 12a2 2 0 0 0 4 0"/></symbol>
+</svg>
 <main class="coamo-test-theme" id="coamo-access" aria-labelledby="access-title">
 <video class="login-background-video" id="login-background-video" autoplay muted playsinline webkit-playsinline preload="none" aria-hidden="true" data-src="abertura.mp4" data-portrait-src="abertura-iphone.mp4"></video><img id="login-background-animation" class="login-background-video" alt="" aria-hidden="true" data-src="abertura-login.webp" hidden><div class="access-backdrop-logo" aria-hidden="true"><svg viewBox="0 0 500 177" role="img" aria-label="Coamo">
     <image class="brand-intro-piece" x="0" y="86" width="82" height="90" href="data:image/png;base64,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"></image>
@@ -756,7 +780,13 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
  <button id="access-logout" type="button" class="btn noprint">Sair</button>
 </header>
 <h1 id="home-title" tabindex="-1">Painel industrial</h1>
-<div class="profile-strip noprint"><span class="profile-name" data-profile-name></span><div class="profile-actions"><button type="button" class="btn" data-open-profile>Minha conta</button><button type="button" class="btn" data-open-inbox>Avisos</button></div></div>
+<div class="profile-strip noprint">
+ <div class="profile-identity"><span class="profile-avatar" data-profile-avatar aria-hidden="true"></span><span class="profile-name" data-profile-name></span></div>
+ <div class="profile-actions">
+  <button type="button" class="btn" data-open-profile><svg class="profile-icon" aria-hidden="true"><use href="#profile-icon-user"/></svg>Minha conta</button>
+  <button type="button" class="btn" data-open-inbox><svg class="profile-icon" aria-hidden="true"><use href="#profile-icon-bell"/></svg>Avisos<span class="profile-badge" data-notice-badge aria-hidden="true" hidden></span></button>
+ </div>
+</div>
 <p id="sync-status" role="status"></p>
 <p class="home-prompt">Selecione o setor</p>
 <div class="home-options">
@@ -775,14 +805,21 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
 <aside class="side" hidden><a class="skip-link noprint" href="#pt">Pular para o conteúdo</a><div class="brand"><img class="logo" alt="Coamo" src="data:image/jpeg;base64,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"><div><strong id="area-brand">ENVASE • COAMO</strong><small>Inteligência operacional</small></div></div>
 <div class="side-navigation"><button class="home-back" type="button" id="home-back" aria-label="Voltar ao menu principal"><span class="ico"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 12H5m6 6-6-6 6-6"/></svg></span> <span class="home-back-full">Voltar ao menu principal</span><span class="home-back-short" aria-hidden="true">Setores</span></button><button class="nav-toggle noprint" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav"><span class="nav-toggle-copy"><small>Módulos</small><strong id="mobile-module-title">Visão geral</strong></span><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button><nav class="nav" id="nav" aria-label="Módulos do painel"></nav></div><div class="sidefoot">Dados rastreáveis<br>Atualize pela planilha Excel</div></aside>
 <main id="dashboard" hidden><header class="top"><div><div class="eyebrow" id="area-heading">Controle industrial / linha PET 900 ml</div><h1 id="pt" tabindex="-1">Visão geral da operação</h1><p id="pp"></p></div><div class="actions"><button type="button" class="btn primary" id="gr"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9zm0 0v6h6M8 13h8m-8 4h6"/></svg><span>Gerar relatório</span></button><button type="button" class="btn" onclick="window.print()"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 8V3h10v5M7 17H4V9h16v8h-3M7 14h10v7H7z"/></svg><span>Imprimir / PDF</span></button><button type="button" class="btn" id="ib"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m-4 4 4-4 4 4M4 15v5h16v-5"/></svg><span>Importar planilha</span></button></div><img class="plogo" id="pl" alt="Coamo"></header>
-<div class="profile-strip noprint"><span class="profile-name" data-profile-name></span><div class="profile-actions"><button type="button" class="btn" data-open-profile>Minha conta</button><button type="button" class="btn" data-open-inbox>Avisos</button></div></div>
+<div class="profile-strip noprint">
+ <div class="profile-identity"><span class="profile-avatar" data-profile-avatar aria-hidden="true"></span><span class="profile-name" data-profile-name></span></div>
+ <div class="profile-actions">
+  <button type="button" class="btn" data-open-profile><svg class="profile-icon" aria-hidden="true"><use href="#profile-icon-user"/></svg>Minha conta</button>
+  <button type="button" class="btn" data-open-inbox><svg class="profile-icon" aria-hidden="true"><use href="#profile-icon-bell"/></svg>Avisos<span class="profile-badge" data-notice-badge aria-hidden="true" hidden></span></button>
+ </div>
+</div>
 <div class="filters" id="bar"></div><div id="v"></div></main>
 <aside id="profile-alert" class="noprint" aria-label="Aviso novo" hidden>
- <strong id="profile-alert-title">Novo aviso</strong><p id="profile-alert-text" role="status"></p>
+ <div class="profile-alert-copy"><span class="profile-icon-tile" aria-hidden="true"><svg class="profile-icon"><use href="#profile-icon-bell"/></svg></span><div><strong id="profile-alert-title">Novo aviso</strong><p id="profile-alert-text" role="status"></p></div></div>
  <div class="profile-actions"><button type="button" class="btn primary" id="profile-alert-open">Ver avisos</button><button type="button" class="btn" id="profile-alert-dismiss">Agora não</button></div>
 </aside>
 <dialog id="profile-dialog" class="profile-dialog noprint" aria-labelledby="profile-title">
- <header><div><h2 id="profile-title" tabindex="-1">Minha conta</h2><strong data-profile-name></strong><p id="profile-email" class="mut"></p></div><form method="dialog"><button class="btn">Fechar</button></form></header>
+ <header><h2 id="profile-title" tabindex="-1">Minha conta</h2><form method="dialog"><button class="btn">Fechar</button></form></header>
+ <div class="profile-identity"><span class="profile-avatar" data-profile-avatar aria-hidden="true"></span><div><strong class="profile-name" data-profile-name></strong><p id="profile-email" class="mut"></p></div></div>
  <details id="profile-password"><summary>Alterar senha</summary>
   <form id="profile-password-form">
    <label>Senha atual<input type="password" name="current" autocomplete="current-password" required></label>
@@ -2780,8 +2817,20 @@ let latestNotice=null, dismissedNotice=null, checkingNotices=false, inboxLimit=2
 let inboxRequest=0;
 
 function showProfileIdentity(){
- document.querySelectorAll('[data-profile-name]').forEach(el=>{el.textContent=accessProfile?.name||''});
+ const name=accessProfile?.name||'';
+ const words=name.trim().split(/\s+/);
+ const initials=name.includes('@')?name.slice(0,1):[words[0]?.[0],words.length>1?words.at(-1)[0]:''].join('');
+ document.querySelectorAll('[data-profile-name]').forEach(el=>{el.textContent=name});
+ document.querySelectorAll('[data-profile-avatar]').forEach(el=>{el.textContent=initials.toLocaleUpperCase('pt-BR')});
  $('#profile-email').textContent=accessProfile?.email||'';
+}
+function showNoticeCount(count){
+ document.querySelectorAll('[data-open-inbox]').forEach(button=>{
+  const badge=button.querySelector('[data-notice-badge]');
+  badge.textContent=count>99?'99+':count||'';
+  badge.hidden=!count;
+  button.setAttribute('aria-label',count?'Avisos, '+count+(count===1?' não lido':' não lidos'):'Avisos');
+ });
 }
 function noticeElement(tag,label,className){
  const element=document.createElement(tag);
@@ -2798,9 +2847,7 @@ async function checkNotices(){
    .is('read_at',null).order('created_at',{ascending:false}).order('id').limit(1);
   if(error||accessProfile!==profile)return;
   latestNotice=data[0]||null;
-  document.querySelectorAll('[data-open-inbox]').forEach(button=>{
-   button.textContent=count?'Avisos ('+count+')':'Avisos';
-  });
+  showNoticeCount(count);
   profileAlert.hidden=!latestNotice||latestNotice.id===dismissedNotice||profileDialog.open||profileCompose.open||operationLogin.open||operationCompose.open;
   if(!profileAlert.hidden){
    const popup={
@@ -2925,7 +2972,7 @@ window.addEventListener('coamo:access-cleared',()=>{
  profileAlert.hidden=true;
  inboxList.replaceChildren();
  $('#profile-inbox-status').textContent='';
- document.querySelectorAll('[data-open-inbox]').forEach(button=>{button.textContent='Avisos'});
+ showNoticeCount(0);
  showProfileIdentity();
 });
 setInterval(checkNotices,20000);
