@@ -4,16 +4,15 @@ alter table public.panel_staff add column admission_date date
  check (admission_date is null or admission_date >= date '1900-01-01' and admission_date <= (now() at time zone 'America/Sao_Paulo')::date);
 grant update (admission_date) on public.panel_staff to authenticated;
 
-drop function public.panel_vacation_people(text);
-create function public.panel_vacation_people(target_sector text)
+create function public.panel_vacation_people_with_admission(target_sector text)
 returns table(registration text,full_name text,shift text,admission_date date)
 language sql stable security definer set search_path=''
 as $$
  select s.registration,s.full_name,s.shift,s.admission_date from public.panel_staff s
  where s.sector=target_sector and public.panel_team_can_plan(s.sector,s.shift) order by s.full_name;
 $$;
-revoke all on function public.panel_vacation_people(text) from public,anon,authenticated;
-grant execute on function public.panel_vacation_people(text) to authenticated;
+revoke all on function public.panel_vacation_people_with_admission(text) from public,anon,authenticated;
+grant execute on function public.panel_vacation_people_with_admission(text) to authenticated;
 
 create function public.panel_staff_activation_target(manager_id uuid, employee_registration text, corporate_email text, attach_user uuid default null)
 returns jsonb language plpgsql security definer set search_path=''
