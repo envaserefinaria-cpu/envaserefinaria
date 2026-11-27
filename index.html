@@ -661,7 +661,7 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
 .profile-strip [data-open-inbox]:hover,.profile-dialog .btn.primary:hover,#profile-alert .btn.primary:hover{background:#104731;border-color:#104731}
 .profile-badge{display:grid;place-items:center;min-width:22px;height:22px;padding-inline:4px;border-radius:999px;background:#ffeab7;color:#513609;font-size:.75rem;font-weight:800}
 .profile-strip :is(button):focus-visible,.profile-dialog :is(button,summary,input,textarea,select):focus-visible,#profile-alert button:focus-visible{outline:2px solid #145c43;outline-offset:2px}
-.profile-dialog{width:min(calc(100% - 24px),620px);max-height:calc(100dvh - 24px);padding:clamp(16px,3vw,28px);border:1px solid #f9fffb;border-radius:21px;background:radial-gradient(ellipse at 100% 0%,#f3e6c3d9,transparent 53%),linear-gradient(145deg,#fafffbed,#e0efe5ed);box-shadow:0 22px 64px #12382e50;overflow:auto;backdrop-filter:blur(16px) saturate(120%);-webkit-backdrop-filter:blur(16px) saturate(120%)}
+.profile-dialog{width:min(calc(100% - 24px),620px);max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);padding:clamp(16px,3vw,28px);border:1px solid #f9fffb;border-radius:21px;background:radial-gradient(ellipse at 100% 0%,#f3e6c3d9,transparent 53%),linear-gradient(145deg,#fafffbed,#e0efe5ed);box-shadow:0 22px 64px #12382e50;overflow:auto;overscroll-behavior:contain;backdrop-filter:blur(16px) saturate(120%);-webkit-backdrop-filter:blur(16px) saturate(120%)}
 .profile-dialog::before,#profile-alert::before{content:"";position:absolute;inset:0 18px auto;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,#165c46,#6b9c55 65%,#e4b347)}
 .profile-dialog::backdrop{background:#17382e70;backdrop-filter:blur(3px)}
 .profile-dialog header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
@@ -687,7 +687,10 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
 .notice-card p{white-space:pre-wrap;margin:6px 0}
 .operation-kicker{color:#1b694f;font-size:.78rem;font-weight:750;text-transform:uppercase;letter-spacing:.08em}
 #operation-login-dialog{max-width:500px}
+#operation-login-dialog[open]{display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+#operation-login-dialog .operation-login-content{min-height:0;overflow:auto;overscroll-behavior:contain}
 #operation-login-dialog h2{margin:4px 0 8px}
+#operation-login-dialog :is(.operation-kicker,#operation-login-count){margin:0}
 #operation-login-title:focus{outline:none}
 #operation-login-dialog .notice-card{margin:12px 0 16px}
 #operation-login-dialog .profile-actions{align-items:stretch}
@@ -698,7 +701,30 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
 .profile-alert-copy{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:10px;margin-bottom:11px}
 #profile-alert .profile-icon-tile{border-color:#efd59b;background:#faeac1;color:#714e12}
 #profile-alert p{margin:3px 0 0;color:var(--profile-muted);overflow-wrap:anywhere}
-@media(max-width:480px){.profile-strip .profile-identity,.profile-strip .profile-actions{width:100%}.profile-strip button{flex:1}.profile-dialog .btn,#profile-alert .btn{padding-inline:9px}}
+@media(max-width:600px){
+ .profile-strip{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:10px 12px}
+ .profile-strip .profile-actions,#profile-alert .profile-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+ .profile-strip .btn,.profile-dialog .btn,#profile-alert .btn{min-height:46px;padding-inline:8px;white-space:normal;line-height:1.25}
+ .profile-dialog{
+  --profile-safe-top:max(12px,env(safe-area-inset-top));
+  --profile-safe-bottom:max(12px,env(safe-area-inset-bottom));
+  --profile-safe-left:max(12px,env(safe-area-inset-left));
+  --profile-safe-right:max(12px,env(safe-area-inset-right));
+  inset:auto var(--profile-safe-right) var(--profile-safe-bottom) var(--profile-safe-left);
+  width:calc(100% - var(--profile-safe-left) - var(--profile-safe-right));
+  max-height:calc(100vh - var(--profile-safe-top) - var(--profile-safe-bottom));
+  max-height:calc(100dvh - var(--profile-safe-top) - var(--profile-safe-bottom));
+  padding:15px;margin:0 auto;border-radius:19px
+ }
+ .profile-dialog :is(input,textarea,select){font-size:16px}
+ #operation-login-dialog .profile-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ #operation-login-dialog #operation-login-read{grid-column:1/-1}
+ #operation-login-dialog .profile-actions form,.profile-dialog .profile-actions form>.btn{width:100%;margin:0}
+ #profile-alert{left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));width:auto;padding:13px}
+}
+@media(max-height:410px) and (orientation:landscape){
+ .profile-dialog{--profile-landscape-top:max(8px,env(safe-area-inset-top));--profile-landscape-bottom:max(8px,env(safe-area-inset-bottom));max-height:calc(100vh - var(--profile-landscape-top) - var(--profile-landscape-bottom));max-height:calc(100dvh - var(--profile-landscape-top) - var(--profile-landscape-bottom));inset:var(--profile-landscape-top) max(12px,env(safe-area-inset-right)) var(--profile-landscape-bottom) max(12px,env(safe-area-inset-left));margin:auto;width:min(calc(100% - max(12px,env(safe-area-inset-left)) - max(12px,env(safe-area-inset-right))),620px)}
+}
 @media print{.profile-dialog,#profile-alert{display:none!important}}
 </style></head><body class="home coamo-glass">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -857,16 +883,22 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
  </form>
 </dialog>
 <dialog id="operation-login-dialog" class="profile-dialog noprint" aria-labelledby="operation-login-title">
- <p class="operation-kicker" id="operation-login-sector"></p>
- <h2 id="operation-login-title" tabindex="-1">Aviso da Gestão</h2>
- <p id="operation-login-count" class="mut"></p>
- <article class="notice-card unread"><h3 id="operation-login-subject"></h3><p id="operation-login-body"></p></article>
- <p id="operation-login-status" role="status"></p>
- <div class="profile-actions">
-  <button type="button" id="operation-login-read" class="btn primary">Marcar como lido</button>
-  <button type="button" id="operation-login-inbox" class="btn">Ver todos os avisos</button>
-  <form method="dialog"><button class="btn">Agora não</button></form>
+ <div>
+  <p class="operation-kicker" id="operation-login-sector"></p>
+  <h2 id="operation-login-title" tabindex="-1">Aviso da Gestão</h2>
+  <p id="operation-login-count" class="mut"></p>
  </div>
+ <div class="operation-login-content" tabindex="0" aria-label="Conteúdo do aviso">
+  <article class="notice-card unread"><h3 id="operation-login-subject"></h3><p id="operation-login-body"></p></article>
+ </div>
+ <footer>
+  <p id="operation-login-status" role="status"></p>
+  <div class="profile-actions">
+   <button type="button" id="operation-login-read" class="btn primary">Marcar como lido</button>
+   <button type="button" id="operation-login-inbox" class="btn">Ver todos os avisos</button>
+   <form method="dialog"><button class="btn">Agora não</button></form>
+  </div>
+ </footer>
 </dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.102.0/dist/umd/supabase.js"></script>
 <script>
@@ -2934,7 +2966,7 @@ function openProfile(inbox){
  if(latestNotice)dismissedNotice=latestNotice.id;
  profileAlert.hidden=true;
  profileDialog.showModal();
- (inbox?$('#profile-inbox-title'):$('#profile-title')).focus();
+ (inbox?$('#profile-inbox-title'):$('#profile-title')).focus({preventScroll:true});
  void loadProfileInbox();
 }
 document.querySelectorAll('[data-open-profile]').forEach(button=>{button.onclick=()=>openProfile(false)});
@@ -3077,7 +3109,7 @@ async function showOperationAtLogin(profile){
   };
   profileAlert.hidden=true;
   operationLogin.showModal();
-  $('#operation-login-title').focus();
+  $('#operation-login-title').focus({preventScroll:true});
  }catch{}
 }
 $('#operation-login-inbox').onclick=()=>{operationLogin.close();openProfile(true)};
