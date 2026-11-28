@@ -725,14 +725,15 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
  overscroll-behavior:contain;scrollbar-width:none;scroll-padding-block:8px;
 }
 .operation-fields::-webkit-scrollbar,#operation-recipient-list::-webkit-scrollbar{display:none}
-#operation-compose .operation-fields label{margin:0;font-size:.86rem;min-width:0}
+#operation-compose .operation-fields label{align-content:start;gap:5px;margin:0;font-size:.86rem;line-height:1.35;min-width:0}
 #operation-compose .operation-fields :is(input,textarea,select){padding:7px 10px;background:#fff}
+#operation-compose .operation-fields :is(input,select){height:44px;min-height:44px}
 #operation-compose .operation-fields textarea{min-height:96px;resize:vertical}
-.operation-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.operation-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:12px}
 .operation-row>*{min-width:0}
-#operation-compose .operation-fields>*+*{margin-top:10px}
+#operation-compose .operation-fields>*+*{margin-top:12px}
 .operation-message-row{grid-template-columns:minmax(0,1fr) minmax(128px,32%)}
-#operation-duration-help,#operation-recipient-note{font-size:.77rem;line-height:1.35;margin:5px 0 0}
+#operation-duration-help,#operation-recipient-note{font-size:.77rem;line-height:1.35;margin:4px 0 0}
 #operation-recipient-list{margin-top:6px;max-height:96px;scrollbar-width:none}
 #operation-recipient-list:empty{display:none}
 .operation-compose-footer{
@@ -1415,7 +1416,7 @@ const s=String(v==null?'':v).trim();let m=s.match(/^\d{4}-\d{2}-\d{2}/);if(m)ret
 const mon=d=>{const x=new Date(d+'T12:00:00Z');x.setUTCDate(x.getUTCDate()-(x.getUTCDay()+6)%7);return x.toISOString().slice(0,10)};
 const MENU=[
  ['Operação',[['visao','Visão geral'],['prod','Produção'],['t1','Turno A'],['t2','Turno B'],['t3','Turno C'],['ins','Consumo e perdas'],['fal','Paradas e falhas']]],
- ['Gestão',[['gestao','Gestão'],['custos-gestao','Gestão de custos']]],
+ ['Gestão',[['gestao','Gestão de pessoas'],['custos-gestao','Gestão de custos']]],
  ['Planejamento',[['escala','Escala e agenda'],['ord','Ordem de produção'],['proj','Projeção do mês'],['qual','Qualidade dos dados'],['custos','Análise de custos']]],
  ['Relatórios e dados',[['rel','Relatório'],['imp','Importar dados'],['cfg','Configurações']]]
 ];
@@ -2907,7 +2908,7 @@ function render(){if(!canOpenSector(AREA))return;if((['cfg','custos-gestao'].inc
  const viewChanged=animatedView!==view;
  if(viewChanged)stopPanelMotion();
  animatedView=view;
- clearCharts();S=calc();const TT={'custos-gestao':'Gestão de custos · '+AREAS[AREA].name,gestao:'Gestão · '+AREAS[AREA].name,escala:'Escala e planejamento',visao:'Visão geral da operação',prod:'Produção e turnos',t1:'Desempenho do Turno A',t2:'Desempenho do Turno B',t3:'Desempenho do Turno C',ins:'Consumo e perdas',fal:'Paradas e falhas',ord:'Ordem de produção',rel:'Relatório',proj:'Projeção de fechamento do mês',qual:'Qualidade dos dados',custos:'Análise de custos',imp:'Dados e importação',cfg:'Configurações'};
+ clearCharts();S=calc();const TT={'custos-gestao':'Gestão de custos · '+AREAS[AREA].name,gestao:'Gestão de pessoas · '+AREAS[AREA].name,escala:'Escala e planejamento',visao:'Visão geral da operação',prod:'Produção e turnos',t1:'Desempenho do Turno A',t2:'Desempenho do Turno B',t3:'Desempenho do Turno C',ins:'Consumo e perdas',fal:'Paradas e falhas',ord:'Ordem de produção',rel:'Relatório',proj:'Projeção de fechamento do mês',qual:'Qualidade dos dados',custos:'Análise de custos',imp:'Dados e importação',cfg:'Configurações'};
 $('#nav').innerHTML=MENU.filter(([group])=>group!=='Gestão'||canOpenLeadership()).map(([group,items])=>`<div class="nav-group"><div class="navlabel">${group}</div>
 ${items.filter(([key])=>!['cfg','custos-gestao'].includes(key)||isManagement()).map(([key,label])=>`<button type="button" data-m="${key}" ${key===M?'class="on" aria-current="page"':''}><span class="ico" aria-hidden="true">${menuIcons[key]||menuIcons.ord}</span>${label}</button>`).join('')}</div>`).join('');
 $('#mobile-module-title').textContent=MENU.flatMap(([,items])=>items).find(([key])=>key===M)?.[1]||'Visão geral';
