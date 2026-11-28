@@ -704,6 +704,52 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
 #operation-recipient-list .operation-recipient-chip span:last-child{font-weight:750}
 #operation-recipient-list .operation-recipient-chip:focus-visible{outline:2px solid #15533e;outline-offset:-2px}
 #operation-recipient-note{margin:5px 0 0}
+
+#operation-compose{
+ width:min(calc(100% - 24px),720px);padding:0;overflow:hidden;background:#f4faf4;
+}
+#operation-compose[open]{display:flex;flex-direction:column}
+#operation-compose>header{
+ flex:none;margin:0;padding:17px clamp(14px,4vw,24px) 11px;
+ border-bottom:1px solid #d1e3d7;background:linear-gradient(135deg,#f8fcf5,#edf5e9);
+}
+#operation-compose>header h2{font-size:clamp(1.18rem,4vw,1.5rem);line-height:1.2}
+#operation-compose>header .operation-kicker{
+ display:inline-block;margin:0 0 4px;padding:2px 8px;border-radius:999px;
+ background:#e0efe4;letter-spacing:.02em;font-weight:750;
+}
+#operation-compose .operation-close{background:#fff;border-color:#c7dbcf}
+#operation-compose-form{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+.operation-fields{
+ overflow-y:auto;min-height:0;padding:14px clamp(14px,4vw,24px);
+ overscroll-behavior:contain;scrollbar-width:none;scroll-padding-block:8px;
+}
+.operation-fields::-webkit-scrollbar,#operation-recipient-list::-webkit-scrollbar{display:none}
+#operation-compose .operation-fields label{margin:0;font-size:.86rem;min-width:0}
+#operation-compose .operation-fields :is(input,textarea,select){padding:7px 10px;background:#fff}
+#operation-compose .operation-fields textarea{min-height:96px;resize:vertical}
+.operation-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.operation-row>*{min-width:0}
+#operation-compose .operation-fields>*+*{margin-top:10px}
+.operation-message-row{grid-template-columns:minmax(0,1fr) minmax(128px,32%)}
+#operation-duration-help,#operation-recipient-note{font-size:.77rem;line-height:1.35;margin:5px 0 0}
+#operation-recipient-list{margin-top:6px;max-height:96px;scrollbar-width:none}
+#operation-recipient-list:empty{display:none}
+.operation-compose-footer{
+ flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px 16px;
+ padding:9px clamp(14px,4vw,24px);border-top:1px solid #d1e3d7;background:#edf6ef;
+}
+.operation-compose-footer :is(p,.mut){margin:0}
+#operation-recipient-count{font-weight:700;color:#245441}
+#operation-compose-status{max-width:44ch;font-size:.8rem;overflow-wrap:anywhere}
+.operation-compose-footer button{flex:none}
+@media(max-width:580px){
+ #operation-compose{width:calc(100% - var(--profile-safe-left) - var(--profile-safe-right))}
+ .operation-row{grid-template-columns:minmax(0,1fr);gap:8px}
+ #operation-compose .operation-fields>*+*{margin-top:8px}
+ #operation-compose>header{padding-top:13px}
+ #operation-compose .operation-fields textarea{min-height:82px}
+}
 #profile-alert{position:fixed;z-index:120;inset:auto max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) auto;width:min(395px,calc(100% - 32px));padding:15px 16px;border:1px solid #fafffb;border-radius:17px;background:linear-gradient(140deg,#f7fff8f2,#e2f2e7eb 67%,#f3e9cbed);box-shadow:0 14px 42px #14362945;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .profile-alert-copy{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:10px;margin-bottom:11px}
 #profile-alert .profile-icon-tile{border-color:#efd59b;background:#faeac1;color:#714e12}
@@ -887,23 +933,35 @@ body.home{display:block;padding:0}.home-screen{min-height:100vh;display:grid;pla
  </form>
 </dialog>
 <dialog id="operation-compose" class="profile-dialog noprint" aria-labelledby="operation-compose-title">
- <header><div><p id="operation-sector" class="operation-kicker"></p><h2 id="operation-compose-title">Enviar comunicado</h2></div><form method="dialog"><button class="btn">Fechar</button></form></header>
+ <header>
+  <div><p id="operation-sector" class="operation-kicker"></p><h2 id="operation-compose-title">Enviar comunicado</h2></div>
+  <form method="dialog"><button class="btn operation-close" autofocus>Fechar</button></form>
+ </header>
  <form id="operation-compose-form">
-  <p id="operation-audience-scope" class="mut"></p>
-  <label id="operation-forward" hidden>Encaminhar aviso recebido<select name="forward"><option value="">Escrever um aviso novo</option></select></label>
-  <label>Destinatários<select name="audience"><option value="people">Um ou mais colaboradores</option><option value="shift">Um turno</option><option value="all">Todo o setor</option></select></label>
-  <label id="operation-shift" hidden>Turno<select name="shift"><option value="A">Turno A</option><option value="B">Turno B</option><option value="C">Turno C</option><option value="G">Turno G — Geral</option></select></label>
-  <div id="operation-people">
-   <label>Selecionar colaborador<select id="operation-recipient-select" aria-describedby="operation-recipient-note"><option value="">Escolha pelo nome</option></select></label>
-   <p id="operation-recipient-note" class="mut"></p>
+  <div class="operation-fields">
+   <label id="operation-forward" hidden>Encaminhar aviso recebido<select name="forward"><option value="">Escrever um aviso novo</option></select></label>
+   <div class="operation-row">
+    <label>Destinatários<select name="audience"><option value="people">Um ou mais colaboradores</option><option value="shift">Um turno</option><option value="all">Todo o setor</option></select></label>
+    <label id="operation-shift" hidden>Turno<select name="shift"><option value="A">Turno A</option><option value="B">Turno B</option><option value="C">Turno C</option><option value="G">Turno G — Geral</option></select></label>
+    <div id="operation-people">
+     <label>Selecionar colaborador<select id="operation-recipient-select" aria-describedby="operation-recipient-note"><option value="">Escolha pelo nome</option></select></label>
+     <p id="operation-recipient-note" class="mut"></p>
+    </div>
+   </div>
    <ul id="operation-recipient-list" aria-label="Colaboradores selecionados"></ul>
+   <div class="operation-row operation-message-row">
+    <label>Assunto<input name="subject" maxlength="100" required></label>
+    <div>
+     <label>Duração (horas)<input type="number" name="duration" min="1" max="720" step="1" aria-describedby="operation-duration-help" required></label>
+     <p id="operation-duration-help" class="mut">Contada a partir do envio.</p>
+    </div>
+   </div>
+   <label>Aviso<textarea name="body" maxlength="2000" required></textarea></label>
   </div>
-  <p id="operation-recipient-count" class="mut" role="status"></p>
-  <label>Assunto<input name="subject" maxlength="100" required></label>
-  <label>Aviso<textarea name="body" maxlength="2000" required></textarea></label>
-  <label>Duração do aviso (em horas)<input type="number" name="duration" min="1" max="720" step="1" required></label><p class="mut">A contagem começa no envio. Ao vencer, o aviso sai da caixa do destinatário.</p>
-  <button type="submit" class="btn primary" disabled>Enviar aviso</button>
-  <p id="operation-compose-status" role="status"></p>
+  <div class="operation-compose-footer">
+   <div><p id="operation-recipient-count" class="mut" role="status"></p><p id="operation-compose-status" role="status"></p></div>
+   <button type="submit" class="btn primary" disabled>Enviar aviso</button>
+  </div>
  </form>
 </dialog>
 <dialog id="operation-login-dialog" class="profile-dialog noprint" aria-labelledby="operation-login-title">
@@ -3264,7 +3322,7 @@ const operationSelected=new Set();
 let operationRecipients=[], operationScope=null, operationLoading=false, operationSending=false, forwardableNotices=[];
 function operationAudience(){
  const {audience,shift}=operationForm.elements;
- $('#operation-people').hidden=audience.value!=='people';
+ $('#operation-people').hidden=operationList.hidden=audience.value!=='people';
  $('#operation-shift').hidden=audience.value!=='shift';
  const count=audience.value==='people'?operationSelected.size:
   operationRecipients.filter(row=>row.user_id&&(audience.value==='all'||row.shift===shift.value)).length;
@@ -3316,11 +3374,11 @@ async function openOperationComposer(sector){
  operationForm.reset();operationSelected.clear();operationRecipients=[];forwardableNotices=[];
  $('#operation-forward').hidden=true;
  operationForm.elements.forward.replaceChildren(new Option('Escrever um aviso novo',''));
- $('#operation-audience-scope').textContent='';
  operationStatus.textContent='';operationLoading=true;operationSending=false;
  $('#operation-sector').textContent=AREAS[sector].name;
  drawOperationRecipients();operationAudience();
  operationCompose.showModal();
+ operationForm.querySelector('.operation-fields').scrollTop=0;
  try{
   const [member,recipients,forwardable]=await Promise.all([
    supabaseClient.rpc('panel_team_context',{target_sector:sector}),
@@ -3331,7 +3389,6 @@ async function openOperationComposer(sector){
   if(member.error||recipients.error||!['coordinator','supervisor','assistant'].includes(member.data?.role))throw new Error();
   scope.role=member.data.role;
   operationRecipients=recipients.data||[];
-  $('#operation-audience-scope').textContent='Envie comunicados aos colaboradores de '+AREAS[sector].name+'.';
   forwardableNotices=forwardable.data||[];
   for(const item of forwardableNotices)operationForm.elements.forward.add(new Option(item.subject,item.id));
   $('#operation-forward').hidden=!forwardableNotices.length;
